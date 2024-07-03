@@ -5,7 +5,6 @@ import com.google.common.io.ByteStreams;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.optimistic.serverauth.ClientConstants;
-import dev.optimistic.serverauth.Constants;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
@@ -35,8 +34,6 @@ public abstract class LoginKeyC2SPacketMixin {
         } catch (NetworkEncryptionException e) {
             throw new IllegalStateException("Encryption failed");
         }
-
-        Constants.INSTANCE.getLogger().info("{}", ciphertext.length);
 
         return original.call(key, ciphertext);
     }
