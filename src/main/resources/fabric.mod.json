@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "server-auth",
+  "version": "${version}",
+  "name": "Server Auth",
+  "description": "Allows clients to authenticate with an identity they have previously agreed to use with a server.",
+  "authors": [
+    "OptimisticDev"
+  ],
+  "contact": {
+    "sources": "https://github.com/terrarium-modpack/server-auth",
+    "issues": "https://github.com/terrarium-modpack/server-auth/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "server": [
+      {
+        "adapter": "kotlin",
+        "value": "dev.optimistic.serverauth.Initializer"
+      }
+    ]
+  },
+  "mixins": [
+    "server-auth.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "fabric-api": "*"
+  }
+}

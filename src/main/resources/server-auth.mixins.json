@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "package": "dev.optimistic.serverauth.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ClientConnectionMixin",
+    "NetworkEncryptionUtilsMixin",
+    "accessor.LoginKeyC2SPacketAccessor",
+    "client.LoginKeyC2SPacketMixin",
+    "server.ServerHandshakeNetworkHandlerMixin",
+    "server.ServerLoginNetworkHandlerMixin",
+    "server.ServerLoginNetworkHandlerMixin$AuthenticationThreadMixin",
+    "server.ServerLoginNetworkHandlerMixin$IdOverrideHolderImpl"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "client.ClientLoginNetworkHandlerMixin",
+    "client.ConnectScreenThreadMixin"
+  ]
+}
