@@ -14,6 +14,7 @@ import net.minecraft.server.network.ServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.security.PublicKey;
@@ -21,6 +22,9 @@ import java.util.UUID;
 
 @Mixin(ServerHandshakeNetworkHandler.class)
 public abstract class ServerHandshakeNetworkHandlerMixin {
+    @Unique
+    private static final IllegalStateException EXCEPTION = new IllegalStateException("Unregistered UUID. Please go to your closest immigration office to register your stay");
+
     @WrapOperation(method = "onHandshake", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/ClientConnection;)Lnet/minecraft/server/network/ServerLoginNetworkHandler;"))
     private ServerLoginNetworkHandler onHandshake$newServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection,
                                                                                Operation<ServerLoginNetworkHandler> original,
@@ -32,7 +36,7 @@ public abstract class ServerHandshakeNetworkHandlerMixin {
             PublicKey key = PublicKeyHolder.INSTANCE.getKey(override);
             if (key == null) {
                 connection.send(new LoginDisconnectS2CPacket(Text.literal("Unregistered UUID. Please go to your closest immigration office to register your stay")));
-                throw new IllegalStateException("Unregistered UUID. Please go to your closest immigration office to register your stay");
+                throw EXCEPTION;
             }
         }
 
