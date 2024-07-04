@@ -5,8 +5,12 @@ import java.security.PrivateKey
 import java.util.*
 
 object ClientConstants {
-    val uuid: UUID? = UUID.fromString(System.getProperty("uuid"))
+    val uuid: UUID? = System.getProperty("uuid")?.run { UUID.fromString(this) }
     val privateKeyThreadLocal: ThreadLocal<PrivateKey> = ThreadLocal()
+
+    init {
+        if (uuid == null) Constants.logger.warn("uuid property unset, server-auth will not function")
+    }
 
     fun modifyHandshakePacket(serverAuthId: UUID, handshakePacket: HandshakeC2SPacket): HandshakeC2SPacket =
         HandshakeC2SPacket(
