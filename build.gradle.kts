@@ -6,9 +6,16 @@ plugins {
 version = "1.0.5-SNAPSHOT"
 group = "dev.optimistic"
 
+repositories {
+    maven("https://maven.parchmentmc.org")
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:1.20.1")
-    mappings("net.fabricmc:yarn:1.20.1+build.10:v2")
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.20.1:2023.09.03@zip")
+    })
     modImplementation("net.fabricmc:fabric-loader:0.16.14")
 
     setOf("fabric-api-base", "fabric-command-api-v2").forEach {

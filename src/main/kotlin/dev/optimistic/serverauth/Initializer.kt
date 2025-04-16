@@ -5,10 +5,10 @@ import com.mojang.brigadier.CommandDispatcher
 import dev.optimistic.serverauth.keys.PublicKeyHolder
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
-import net.minecraft.command.CommandRegistryAccess
-import net.minecraft.server.command.CommandManager
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.text.Text
+import net.minecraft.commands.CommandBuildContext
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands
+import net.minecraft.network.chat.Component
 
 class Initializer : DedicatedServerModInitializer, CommandRegistrationCallback {
     override fun onInitializeServer() {
@@ -16,19 +16,20 @@ class Initializer : DedicatedServerModInitializer, CommandRegistrationCallback {
     }
 
     override fun register(
-        dispatcher: CommandDispatcher<ServerCommandSource>,
-        registryAccess: CommandRegistryAccess,
-        environment: CommandManager.RegistrationEnvironment
+        dispatcher: CommandDispatcher<CommandSourceStack>,
+        context: CommandBuildContext,
+        selection: Commands.CommandSelection
     ) {
         dispatcher.register(
-            CommandManager.literal("serverauth")
-                .requires { it.hasPermissionLevel(4) }
-                .then(CommandManager.literal("reload")
+            Commands.literal("serverauth")
+                .requires { it.hasPermission(4) }
+                .then(Commands.literal("reload")
                     .executes {
                         val previous = PublicKeyHolder.getLoaded()
                         PublicKeyHolder.initialize()
                         val new = PublicKeyHolder.getLoaded()
-                        it.source.sendMessage(Text.literal("Reloaded keys for a load count delta of ${new - previous}"))
+                        it.source.sendSystemMessage(Component.literal("Reloaded keys for a load count delta of ${new - 
+                                previous}"))
                         return@executes Command.SINGLE_SUCCESS
                     }
                 )

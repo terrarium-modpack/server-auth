@@ -6,17 +6,17 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "ClientConnectionMixin",
-    "NetworkEncryptionUtilsMixin",
-    "accessor.LoginKeyC2SPacketAccessor",
-    "client.LoginKeyC2SPacketMixin",
-    "server.ServerHandshakeNetworkHandlerMixin",
-    "server.ServerLoginNetworkHandlerMixin",
-    "server.ServerLoginNetworkHandlerMixin$AuthenticationThreadMixin",
-    "server.ServerLoginNetworkHandlerMixin$IdOverrideHolderImpl"
+    "ConnectionMixin",
+    "CryptMixin",
+    "accessor.ServerboundKeyPacketAccessor",
+    "client.ServerboundKeyPacketMixin",
+    "server.ServerHandshakePacketListenerImplMixin",
+    "server.ServerLoginPacketListenerImplMixin",
+    "server.ServerLoginPacketListenerImplMixin$AuthenticationThreadMixin",
+    "server.ServerLoginPacketListenerImplMixin$IdOverrideHolderImpl"
   ],
   "client": [
-    "client.ClientLoginNetworkHandlerMixin",
+    "client.ClientHandshakePacketListenerImplMixin",
     "client.ConnectScreenThreadMixin"
   ]
 }
