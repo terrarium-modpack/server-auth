@@ -40,7 +40,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
         if (override == null) return original.call(instance, privateKey);
         PublicKey key = PublicKeyHolder.INSTANCE.getKey(override);
         if (key == null)
-            throw new IllegalStateException("Unregistered UUID. Please go to your closest immigration office to register your stay");
+            throw new IllegalStateException("Unregistered public key");
 
         ServerboundKeyPacketAccessor accessor = (ServerboundKeyPacketAccessor) instance;
         byte[] firstDecrypted;
