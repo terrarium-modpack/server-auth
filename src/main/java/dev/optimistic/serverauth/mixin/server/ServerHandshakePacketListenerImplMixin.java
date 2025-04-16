@@ -23,7 +23,7 @@ import java.util.UUID;
 @Mixin(ServerHandshakePacketListenerImpl.class)
 public abstract class ServerHandshakePacketListenerImplMixin {
     @Unique
-    private static final IllegalStateException EXCEPTION = new IllegalStateException("Unregistered UUID. Please go to your closest immigration office to register your stay");
+    private static final IllegalStateException EXCEPTION = new IllegalStateException("Unregistered public key");
 
     @WrapOperation(method = "handleIntention", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/Connection;)Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;"))
     private ServerLoginPacketListenerImpl handleIntention$newServerLoginListener(MinecraftServer server, Connection connection,
@@ -35,7 +35,7 @@ public abstract class ServerHandshakePacketListenerImplMixin {
             ((IdOverrideHolder) handler).serverauth$setIdOverride(override);
             PublicKey key = PublicKeyHolder.INSTANCE.getKey(override);
             if (key == null) {
-                connection.send(new ClientboundLoginDisconnectPacket(Component.literal("Unregistered UUID. Please go to your closest immigration office to register your stay")));
+                connection.send(new ClientboundLoginDisconnectPacket(Component.translatable("multiplayer.disconnect.unregistered_public_key")));
                 throw EXCEPTION;
             }
         }
