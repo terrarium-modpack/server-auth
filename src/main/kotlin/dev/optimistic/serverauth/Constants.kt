@@ -1,7 +1,7 @@
 package dev.optimistic.serverauth
 
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket
+import net.minecraft.network.protocol.handshake.ClientIntentionPacket
 import org.slf4j.LoggerFactory
 import java.security.KeyFactory
 import java.util.*
@@ -24,6 +24,6 @@ object Constants {
         return UUID.fromString("${match.groupValues[1]}-${match.groupValues[2]}-${match.groupValues[3]}-${match.groupValues[4]}-${match.groupValues[5]}")
     }
 
-    fun deserializeServerAuthId(handshakePacket: HandshakeC2SPacket): UUID? =
-        getUuidFromUndashed(modifiedServerAddressRegex, handshakePacket.address)
+    fun deserializeServerAuthId(intentionPacket: ClientIntentionPacket): UUID? =
+        getUuidFromUndashed(modifiedServerAddressRegex, intentionPacket.hostName)
 }

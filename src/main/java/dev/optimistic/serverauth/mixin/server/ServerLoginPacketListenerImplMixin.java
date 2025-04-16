@@ -6,12 +6,12 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import dev.optimistic.serverauth.ducks.IdOverrideHolder;
 import dev.optimistic.serverauth.keys.PublicKeyHolder;
-import dev.optimistic.serverauth.mixin.accessor.LoginKeyC2SPacketAccessor;
-import net.minecraft.network.encryption.NetworkEncryptionException;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
+import dev.optimistic.serverauth.mixin.accessor.ServerboundKeyPacketAccessor;
+import net.minecraft.network.protocol.login.ServerboundKeyPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerLoginNetworkHandler;
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+import net.minecraft.util.Crypt;
+import net.minecraft.util.CryptException;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,34 +26,34 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.UUID;
 
-@Mixin(ServerLoginNetworkHandler.class)
-public abstract class ServerLoginNetworkHandlerMixin {
+@Mixin(ServerLoginPacketListenerImpl.class)
+public abstract class ServerLoginPacketListenerImplMixin {
     @Unique
     private final IdOverrideHolder duck = (IdOverrideHolder) this;
     @Shadow
     @Final
     MinecraftServer server;
 
-    @WrapOperation(method = "onKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/c2s/login/LoginKeyC2SPacket;decryptSecretKey(Ljava/security/PrivateKey;)Ljavax/crypto/SecretKey;"))
-    private SecretKey onKey$decryptSecretKey(LoginKeyC2SPacket instance, PrivateKey privateKey, Operation<SecretKey> original) {
+    @WrapOperation(method = "handleKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/login/ServerboundKeyPacket;getSecretKey(Ljava/security/PrivateKey;)Ljavax/crypto/SecretKey;"))
+    private SecretKey handleKey$decryptSecretKey(ServerboundKeyPacket instance, PrivateKey privateKey, Operation<SecretKey> original) {
         UUID override = duck.serverauth$getIdOverride();
         if (override == null) return original.call(instance, privateKey);
         PublicKey key = PublicKeyHolder.INSTANCE.getKey(override);
         if (key == null)
             throw new IllegalStateException("Unregistered UUID. Please go to your closest immigration office to register your stay");
 
-        LoginKeyC2SPacketAccessor accessor = (LoginKeyC2SPacketAccessor) instance;
+        ServerboundKeyPacketAccessor accessor = (ServerboundKeyPacketAccessor) instance;
         byte[] firstDecrypted;
         try {
-            firstDecrypted = NetworkEncryptionUtils.decrypt(server.getKeyPair().getPrivate(), accessor.getEncryptedSecretKey());
-        } catch (NetworkEncryptionException e) {
+            firstDecrypted = Crypt.decryptUsingKey(server.getKeyPair().getPrivate(), accessor.getKeyBytes());
+        } catch (CryptException e) {
             throw new IllegalStateException("Failed to decrypt first layer of secret key encryption", e);
         }
 
         byte[] body;
         try {
-            body = NetworkEncryptionUtils.decrypt(key, firstDecrypted);
-        } catch (NetworkEncryptionException e) {
+            body = Crypt.decryptUsingKey(key, firstDecrypted);
+        } catch (CryptException e) {
             throw new IllegalStateException("Failed to decrypt second layer of secret key encryption", e);
         }
 
@@ -72,11 +72,11 @@ public abstract class ServerLoginNetworkHandlerMixin {
         return new SecretKeySpec(secretKey, "AES");
     }
 
-    @Mixin(targets = "net/minecraft/server/network/ServerLoginNetworkHandler$1")
+    @Mixin(targets = "net/minecraft/server/network/ServerLoginPacketListenerImpl$1")
     public abstract static class AuthenticationThreadMixin {
         @Shadow
         @Final
-        ServerLoginNetworkHandler field_14176;
+        ServerLoginPacketListenerImpl field_14176;
 
         @WrapOperation(method = "run", at = @At(value = "INVOKE", target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;hasJoinedServer(Lcom/mojang/authlib/GameProfile;Ljava/lang/String;Ljava/net/InetAddress;)Lcom/mojang/authlib/GameProfile;", remap = false))
         private GameProfile run$hasJoinedServer(MinecraftSessionService instance, GameProfile gameProfile, String data, InetAddress inetAddress, Operation<GameProfile> original) {
