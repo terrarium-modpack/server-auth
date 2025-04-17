@@ -16,6 +16,7 @@ object ClientConstants {
 
     fun modifyIntentionPacket(serverAuthId: UUID, intentionPacket: ClientIntentionPacket): ClientIntentionPacket =
         ClientIntentionPacket(
+            intentionPacket.protocolVersion,
             "\u0000server-auth\u0000${serverAuthId.toString().replace("-", "")}",
             intentionPacket.port,
             intentionPacket.intention

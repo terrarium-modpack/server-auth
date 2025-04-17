@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.ProfileResult;
 import dev.optimistic.serverauth.ducks.IdOverrideHolder;
 import dev.optimistic.serverauth.keys.PublicKeyHolder;
 import dev.optimistic.serverauth.mixin.accessor.ServerboundKeyPacketAccessor;
@@ -24,6 +25,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Set;
 import java.util.UUID;
 
 @Mixin(ServerLoginPacketListenerImpl.class)
@@ -78,11 +80,21 @@ public abstract class ServerLoginPacketListenerImplMixin {
         @Final
         ServerLoginPacketListenerImpl field_14176;
 
-        @WrapOperation(method = "run", at = @At(value = "INVOKE", target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;hasJoinedServer(Lcom/mojang/authlib/GameProfile;Ljava/lang/String;Ljava/net/InetAddress;)Lcom/mojang/authlib/GameProfile;", remap = false))
-        private GameProfile run$hasJoinedServer(MinecraftSessionService instance, GameProfile gameProfile, String data, InetAddress inetAddress, Operation<GameProfile> original) {
+        @WrapOperation(method = "run", at = @At(value = "INVOKE", target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;hasJoinedServer(Ljava/lang/String;Ljava/lang/String;Ljava/net/InetAddress;)Lcom/mojang/authlib/yggdrasil/ProfileResult;", remap = false))
+        private ProfileResult run$hasJoinedServer(MinecraftSessionService instance, String profileName, String serverId, InetAddress inetAddress, Operation<ProfileResult> original) {
             UUID id = ((IdOverrideHolder) field_14176).serverauth$getIdOverride();
-            if (id == null) return original.call(instance, gameProfile, data, inetAddress);
-            return new GameProfile(id, gameProfile.getName());
+            if (id == null) return original.call(instance, profileName, serverId, inetAddress);
+
+            final GameProfile newProfile = new GameProfile(id, profileName);
+
+            // hasJoined request returns signed data, we should too
+            final ProfileResult fetchedProfile = instance.fetchProfile(id, true);
+            if (fetchedProfile != null) {
+                // mojang after not exposing properties in constructor
+                newProfile.getProperties().putAll(fetchedProfile.profile().getProperties());
+            }
+
+            return new ProfileResult(newProfile, Set.of());
         }
     }
 }
