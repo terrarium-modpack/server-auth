@@ -1,7 +1,7 @@
 package dev.optimistic.serverauth
 
-import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket
+import net.neoforged.fml.loading.FMLPaths
 import org.slf4j.LoggerFactory
 import java.security.KeyFactory
 import java.util.*
@@ -9,7 +9,7 @@ import java.util.*
 object Constants {
     private const val MOD_ID = "server-auth"
     val logger = LoggerFactory.getLogger(MOD_ID)!!
-    val keyDir = FabricLoader.getInstance().configDir.resolve(MOD_ID).resolve("keys")
+    val keyDir = FMLPaths.CONFIGDIR.get().resolve(MOD_ID).resolve("keys")
     val keyFactory = KeyFactory.getInstance("RSA")
 
     private const val UNDASHED_ID_REGEX_TEMPLATE =

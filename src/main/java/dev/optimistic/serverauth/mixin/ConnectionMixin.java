@@ -45,7 +45,7 @@ public abstract class ConnectionMixin implements TaintHolder {
     }
 
     // initiateServerboundConnection lambda
-    @WrapOperation(method = "method_52900", at = @At(value = "NEW", target = "(ILjava/lang/String;ILnet/minecraft/network/protocol/handshake/ClientIntent;)Lnet/minecraft/network/protocol/handshake/ClientIntentionPacket;"))
+    @WrapOperation(method = "lambda$initiateServerboundConnection$10", at = @At(value = "NEW", target = "(ILjava/lang/String;ILnet/minecraft/network/protocol/handshake/ClientIntent;)Lnet/minecraft/network/protocol/handshake/ClientIntentionPacket;"))
     private ClientIntentionPacket run$newIntentionPacket(int protocolVersion, String hostName, int port, ClientIntent intention, Operation<ClientIntentionPacket> original) {
         ClientIntentionPacket orig = original.call(protocolVersion, hostName, port, intention);
         UUID id = ClientConstants.INSTANCE.getUuid();

@@ -1,0 +1,47 @@
+modLoader = "lowcodefml"
+loaderVersion = "[1,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/terrarium-modpack/server-auth/issues"
+
+[[mods]]
+modId = "server_auth"
+namespace = "server-auth"
+version = "${version}"
+displayName = "Server Auth"
+description = "Allows clients to authenticate with an identity they have previously agreed to use with a server."
+authors = "OptimisticDev"
+displayURL = "https://github.com/terrarium-modpack/server-auth/"
+
+[[mixins]]
+config = "server-auth.mixins.json"
+
+[[dependencies.server_auth]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.server_auth]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.148,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.server_auth]]
+modId = "kotlinforforge"
+type = "required"
+versionRange = "[5.7.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.server_auth]]
+modId = "krypton"
+type = "incompatible"
+versionRange = ""
+ordering = "NONE"
+side = "BOTH"
+
+[features.server_auth]
+javaVersion = "[21,)"

@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version "2.1.20"
-    id("fabric-loom") version "1.10-SNAPSHOT"
+    id("dev.architectury.loom") version "1.10-SNAPSHOT"
 }
 
 version = "1.1.0"
@@ -8,6 +8,8 @@ group = "dev.optimistic"
 
 repositories {
     maven("https://maven.parchmentmc.org")
+    maven("https://maven.neoforged.net/releases")
+    maven("https://thedarkcolour.github.io/KotlinForForge")
 }
 
 dependencies {
@@ -17,8 +19,8 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-1.21.1:2024.11.17@zip")
     })
 
-    modImplementation("net.fabricmc:fabric-loader:0.16.14")
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.13.2+kotlin.2.1.20")
+    neoForge("net.neoforged:neoforge:21.1.148")
+    implementation("thedarkcolour:kotlinforforge:5.7.0")
 }
 
 java {
@@ -43,7 +45,7 @@ tasks {
     }
 
     processResources {
-        filesMatching("fabric.mod.json") {
+        filesMatching("META-INF/neoforge.mods.toml" ) {
             expand("version" to project.version)
         }
     }
