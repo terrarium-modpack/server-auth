@@ -16,12 +16,8 @@ dependencies {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.21.1:2024.11.17@zip")
     })
+
     modImplementation("net.fabricmc:fabric-loader:0.16.14")
-
-    setOf("fabric-api-base", "fabric-command-api-v2").forEach {
-        modImplementation(fabricApi.module(it, "0.115.4+1.21.1"))
-    }
-
     modImplementation("net.fabricmc:fabric-language-kotlin:1.13.2+kotlin.2.1.20")
 }
 
