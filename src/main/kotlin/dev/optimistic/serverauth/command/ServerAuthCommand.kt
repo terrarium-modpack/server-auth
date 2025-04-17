@@ -1,25 +1,14 @@
-package dev.optimistic.serverauth
+package dev.optimistic.serverauth.command
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
 import dev.optimistic.serverauth.keys.PublicKeyHolder
-import net.fabricmc.api.DedicatedServerModInitializer
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
-import net.minecraft.commands.CommandBuildContext
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
 
-class Initializer : DedicatedServerModInitializer, CommandRegistrationCallback {
-    override fun onInitializeServer() {
-        CommandRegistrationCallback.EVENT.register(this)
-    }
-
-    override fun register(
-        dispatcher: CommandDispatcher<CommandSourceStack>,
-        context: CommandBuildContext,
-        selection: Commands.CommandSelection
-    ) {
+object ServerAuthCommand {
+    fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(
             Commands.literal("serverauth")
                 .requires { it.hasPermission(4) }

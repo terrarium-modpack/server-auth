@@ -25,11 +25,11 @@ public abstract class ServerHandshakePacketListenerImplMixin {
     @Unique
     private static final IllegalStateException EXCEPTION = new IllegalStateException("Unregistered public key");
 
-    @WrapOperation(method = "handleIntention", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/Connection;)Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;"))
-    private ServerLoginPacketListenerImpl handleIntention$newServerLoginListener(MinecraftServer server, Connection connection,
+    @WrapOperation(method = "beginLogin", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/Connection;Z)Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;"))
+    private ServerLoginPacketListenerImpl handleIntention$newServerLoginListener(MinecraftServer server, Connection connection, boolean transferred,
                                                                                  Operation<ServerLoginPacketListenerImpl> original,
                                                                                  @Local(argsOnly = true) ClientIntentionPacket packet) {
-        ServerLoginPacketListenerImpl handler = original.call(server, connection);
+        ServerLoginPacketListenerImpl handler = original.call(server, connection, transferred);
         UUID override = Constants.INSTANCE.deserializeServerAuthId(packet);
         if (override != null) {
             ((IdOverrideHolder) handler).serverauth$setIdOverride(override);
