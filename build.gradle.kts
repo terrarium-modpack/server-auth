@@ -3,7 +3,7 @@ plugins {
     id("fabric-loom") version "1.10-SNAPSHOT"
 }
 
-version = "1.0.5-SNAPSHOT"
+version = "1.1.0"
 group = "dev.optimistic"
 
 repositories {
